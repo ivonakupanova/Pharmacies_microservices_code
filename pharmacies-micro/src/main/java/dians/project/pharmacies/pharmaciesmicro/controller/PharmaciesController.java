@@ -42,12 +42,6 @@ public class PharmaciesController {
         return "aboutUsPage";
     }
 
-//    @GetMapping("/api/findAll")
-//    @ResponseBody
-//    public Pharmacy[] apiFindAll(){
-//        return pharmaciesService.findAllPharmacies().getPharmacies();
-//    }
-//
     @GetMapping("/api/findByMunicipality")
     @ResponseBody
     public Pharmacy[] apiPharmaciesByOpstina(@RequestParam(required = false)
