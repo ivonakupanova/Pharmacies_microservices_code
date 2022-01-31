@@ -1,0 +1,13 @@
+package dians.project.pharmacies.pharmacy.repository;
+
+import dians.project.pharmacies.pharmacy.model.Pharmacy;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface PharmacyRepository extends JpaRepository<Pharmacy, Long> {
+    List<Pharmacy> findAllByName(String name);
+    List<Pharmacy> findAllByMunicipalityId(Long id);
+}

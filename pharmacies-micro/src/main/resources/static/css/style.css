@@ -1,0 +1,13 @@
+.rating-stars {
+    display: flex;
+    flex-direction: row-reverse;
+}
+.rating-stars span {
+    cursor: pointer;
+}
+.rating-stars:not(:hover) span.selected,
+.rating-stars span:hover,
+.rating-stars span:hover ~ span {
+    color: rgb(247, 202, 24);
+}
+

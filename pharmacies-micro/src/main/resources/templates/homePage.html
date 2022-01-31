@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    <link th:href="@{/css/style.css}" rel="stylesheet" />
+</head>
+<body>
+<nav class="navbar navbar-expand-md navbar-light bg-white">
+    <div class="container">
+        <img th:src="@{/pharmacy-logo.jpg}" style="width: 8%; height: 8% "/><a class="navbar-brand" href="/pharmacies/home">Моја<b>Аптека</b></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <form th:method="GET" th:action="@{/pharmacies/home}" class="form-inline my-2 my-lg-0">
+            <div class="input-group input-group-sm">
+                <input name="namePharmacy" id="namePharmacy" type="text" class="form-control" aria-label="Small"
+                       aria-describedby="inputGroup-sizing-sm"
+                       placeholder="Пребарај по име...">
+                <div class="input-group-append">
+                    <input id="button-name" type="submit" class="btn btn-secondary" value="Пребарај"/>
+                </div>
+            </div>
+        </form>
+
+        <div class="collapse navbar-collapse align-content-right" id="navbarsExampleDefault">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item ml-auto">
+                    <a class="nav-link active" href="/pharmacies/aboutUsPage">За Апликацијата</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<br/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-5">
+            <form th:method="GET" th:action="@{/pharmacies/home}">
+                <div class="form-group">
+                    <h3><b>Пребарај аптеки</b></h3>
+                    <label>Избери општина</label>
+                    <select name="idMunicipality" class="form-control">
+                                                <option value="0">Избери Општина</option>
+                                                <option th:each="mn : ${municipalities}"
+                                                        th:value="${mn.getId()}"
+                                                        th:text="${mn.getName()}">
+                                                </option>
+
+                    </select>
+                </div>
+                <button id="submit" type="submit" class="btn btn-primary" style="width: 445px">Пронајди аптеки</button>
+
+                <table class="table" th:if="${pharmacies}">
+                    <thead>
+                    <tr>
+                        <th scope="col">Општина</th>
+                        <th scope="col">Име на аптека</th>
+                        <th scope="col">Работно време</th>
+                        <th scope="col">Адреса</th>
+                        <th scope="col">Рејтинг</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="pharmacy : ${pharmacies}" class="pharmacy">
+<!--                        <td th:text="${pharmacy.getMunicipalityId}"></td>-->
+                        <div th:switch="${pharmacy.getMunicipalityId}">
+                            <td th:case="'1'" th:text="'Гази Баба'"></td>
+                            <td th:case="'2'" th:text="Центар"></td>
+                            <td th:case="'3'" th:text="Карпош"></td>
+                        </div>
+
+                        <td th:text="${pharmacy.getName()}"></td>
+                        <td th:text="${pharmacy.getWorkingHours()}"></td>
+                        <td th:text="${pharmacy.getAddress()}"></td>
+                        <td>
+                            <div class="rating-stars">
+                                <input type="hidden" name="rating">
+                                <span data-rating="5">★</span>
+                                <span data-rating="4">★</span>
+                                <span data-rating="3">★</span>
+                                <span data-rating="2">★</span>
+                                <span data-rating="1">★</span>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </form>
+        </div>
+                <div class="col-md-5" style="margin-left: 60px">
+                    <div id="googleMap" style="width:600px;height:500px;"></div>
+                </div>
+    </div>
+</div>
+<footer class="text-black-50 mt-xl-5" xmlns:th="http://www.thymeleaf.org">
+    <div class="container">
+        <hr>
+        <p class="mb-0">
+            Сите права се задржани. &copy; 2021
+        </p>
+        <p>
+            Податоците се преземени од OpenStreetMap www.openstreetmap.org
+        </p>
+    </div>
+
+</footer>
+<script>
+    pharmacies = [];
+
+    function getParameterByName(name, url = window.location.href) {
+        name = name.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+            results = regex.exec(url);
+        if (!results) return null;
+        if (!results[2]) return '';
+        return decodeURIComponent(results[2].replace(/\+/g, ' '));
+    }
+
+    url = window.location.href;
+    if(url.includes('/pharmacies/home?namePharmacy=')) {
+        xhr = new XMLHttpRequest();
+        xhr.open('get', '/pharmacies/api/findByName?namePharmacy='
+            +getParameterByName('namePharmacy'));
+
+        xhr.onreadystatechange=function() {
+
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let data = xhr.response;
+                for (let i = 0; i < data.length; i++) {
+                    pharmacies[i] = [
+                        {
+                            lat: data[i].coordinatesLat,
+                            lng: data[i].coordinatesLon
+                        }, data[i].name];
+                }
+                console.log(pharmacies);
+                myMap();
+            }
+        }
+        xhr.responseType = 'json';
+        xhr.send();
+
+    }
+    else if(url.includes('/pharmacies/home?idMunicipality=')) {
+        xhr = new XMLHttpRequest();
+        xhr.open('get', '/pharmacies/api/findByName?namePharmacy='
+            +getParameterByName('namePharmacy'));
+
+        xhr.onreadystatechange=function() {
+
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let data = xhr.response;
+                for (let i = 0; i < data.length; i++) {
+                    pharmacies[i] = [
+                        {
+                            lat: data[i].coordinatesLat,
+                            lng: data[i].coordinatesLon
+                        }, data[i].name];
+                }
+                console.log(pharmacies);
+                myMap();
+            }
+        }
+        xhr.responseType = 'json';
+        xhr.send();
+        xhr = new XMLHttpRequest();
+        xhr.open('get', '/pharmacies/api/findByMunicipality?idMunicipality='
+            +getParameterByName('idMunicipality'));
+
+        xhr.onreadystatechange=function() {
+
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                let data = xhr.response;
+                for (let i = 0; i < data.length; i++) {
+                    pharmacies[i] = [
+                        {
+                            lat: data[i].coordinatesLat,
+                            lng: data[i].coordinatesLon
+                        }, data[i].name];
+                }
+                console.log(pharmacies);
+                myMap();
+            }
+        }
+        xhr.responseType = 'json';
+        xhr.send();
+
+    }
+
+
+
+    function myMap() {
+        var mapProp = {
+
+            center: new google.maps.LatLng(41.9981, 21.4254),
+            zoom: 13,
+        };
+        var map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+        const infoWindow = new google.maps.InfoWindow();
+
+        pharmacies.forEach(([position, title], i) => {
+            console.log(i[0])
+            const marker = new google.maps.Marker({
+                position,
+                map,
+                title: `${i + 1}. ${title}`,
+                label: `${i + 1}`,
+                optimized: false,
+            });
+
+
+            marker.addListener("click", () => {
+                infoWindow.close();
+                infoWindow.setContent(marker.getTitle());
+                infoWindow.open(marker.getMap(), marker);
+            });
+        });
+    }
+    let stars = document.querySelectorAll(".rating-stars span");
+    stars.forEach(star => {
+        star.addEventListener("click", function (e) {
+            let element = this.previousElementSibling;
+            while(element) {
+                element.classList.remove("selected");
+                element = element.previousElementSibling;
+            }
+
+            element = this.nextElementSibling;
+            while(element) {
+                element.classList.add("selected");
+                element = element.nextElementSibling;
+            }
+
+            this.classList.add("selected");
+
+            let rating = this.getAttribute("data-rating");
+            let input = this.parentElement.querySelector("input");
+        })
+    })
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBT5zN2CF23G_06Tp8ySNOxzdFK5Hn6CWQ&callback=myMap"></script>
+
+</body>
+
+</html>
