@@ -24,7 +24,7 @@ public class PharmaciesServiceImpl implements PharmaciesService {
 
         ResponseEntity<Municipality[]> municipalitiesEntity =
                 restTemplate.getForEntity(
-                        "https://municipality-microservice-code.herokuapp.com:9091/pharmacies/getAllMunicipalities",
+                        "https://municipality-microservice-code.herokuapp.com/pharmacies/getAllMunicipalities",
                         Municipality[].class);
 
         Municipality[] municipalities = municipalitiesEntity.getBody();
@@ -39,7 +39,7 @@ public class PharmaciesServiceImpl implements PharmaciesService {
 
         ResponseEntity<Pharmacy[]> pharmaciesEntity =
                 restTemplate.getForEntity(
-                        "https://pharmacy-microservice-code.herokuapp.com:9092/pharmacies/findPharmacies?namePharmacy=" + pharmacyName,
+                        "https://pharmacy-microservice-code.herokuapp.com/pharmacies/findPharmacies?namePharmacy=" + pharmacyName,
                         Pharmacy[].class);
 
         Pharmacy[] pharmacies = pharmaciesEntity.getBody();
@@ -53,7 +53,7 @@ public class PharmaciesServiceImpl implements PharmaciesService {
         ResponseTemplateVO vo = new ResponseTemplateVO();
 
         ResponseEntity<Pharmacy[]> pharmaciesEntity =
-                restTemplate.getForEntity("https://pharmacy-microservice-code.herokuapp.com:9092/pharmacies/findPharmacies?idMunicipality=" + id,Pharmacy[].class);
+                restTemplate.getForEntity("https://pharmacy-microservice-code.herokuapp.com/pharmacies/findPharmacies?idMunicipality=" + id,Pharmacy[].class);
 
         Pharmacy[] pharmacies = pharmaciesEntity.getBody();
 
@@ -67,7 +67,7 @@ public class PharmaciesServiceImpl implements PharmaciesService {
 
         ResponseEntity<Pharmacy[]> pharmaciesEntity =
                 restTemplate.getForEntity(
-                        "https://pharmacy-microservice-code.herokuapp.com:9092/pharmacies/api/findByMunicipality?idMunicipality=" + id,
+                        "https://pharmacy-microservice-code.herokuapp.com/pharmacies/api/findByMunicipality?idMunicipality=" + id,
                         Pharmacy[].class);
 
         Pharmacy[] pharmacies = pharmaciesEntity.getBody();
@@ -82,7 +82,7 @@ public class PharmaciesServiceImpl implements PharmaciesService {
 
         ResponseEntity<Pharmacy[]> pharmaciesEntity =
                 restTemplate.getForEntity(
-                        "https://pharmacy-microservice-code.herokuapp.com:9092/pharmacies/api/findByName?namePharmacy=" + pharmacyName,
+                        "https://pharmacy-microservice-code.herokuapp.com/pharmacies/api/findByName?namePharmacy=" + pharmacyName,
                         Pharmacy[].class);
 
         Pharmacy[] pharmacies = pharmaciesEntity.getBody();
